@@ -1,10 +1,11 @@
 import { motion, useScroll, useTransform, useSpring, animate } from "framer-motion";
-import { Terminal, Cpu, Globe, Mail, ArrowRight, ExternalLink, Zap, Network, Shield, Activity, BookOpen, Clock, MapPin, ChevronUp, Star, Menu, X } from "lucide-react";
+import { Terminal, Cpu, Globe, Mail, ArrowRight, ExternalLink, Zap, Network, Shield, Activity, BookOpen, Clock, MapPin, ChevronUp, Star } from "lucide-react";
 import { SiGithub } from "react-icons/si";
 import { RiLinkedinFill } from "react-icons/ri";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
-import heroImg from "../assets/images/hero-abstract.png";
+import SiteNav from "@/components/site-nav";
+import heroImg from "../assets/images/hero-lively-v2.png";
 import aiAssistantImg from "../assets/images/ai assistent.png";
 import curebridgeImg from "../assets/images/curebridge.png";
 import hhhJobsImg from "../assets/images/hhh-jobs.png";
@@ -166,7 +167,6 @@ export default function Home() {
 
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const typed = useTyped(TYPED_WORDS);
 
   useEffect(() => {
@@ -183,13 +183,12 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const onResize = () => {
-      if (window.innerWidth >= 1024) {
-        setMobileNavOpen(false);
-      }
-    };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    if (window.location.hash === "#insights") {
+      requestAnimationFrame(() => {
+        const insightsSection = document.getElementById("insights");
+        insightsSection?.scrollIntoView({ behavior: "auto", block: "start" });
+      });
+    }
   }, []);
 
   const handleScrollToTop = () => {
@@ -247,90 +246,16 @@ export default function Home() {
         <ChevronUp className="h-5 w-5" />
       </motion.button>
 
-      {/* === NAV === */}
-      <nav className="fixed top-0 left-0 right-0 z-40 border-b border-white/5 bg-background/50 px-4 py-4 backdrop-blur-xl md:px-12 md:py-6">
-        <div className="flex items-center justify-between">
-        <div className="relative flex cursor-pointer items-center gap-2 font-display text-base font-bold tracking-tighter sm:text-xl">
-          <Terminal className="w-5 h-5 text-primary group-hover:animate-pulse group-active:animate-pulse" />
-          <span>RISHAV<span className="text-primary">.</span>RAJ</span>
-        </div>
-        <div className="hidden lg:flex items-center gap-8 text-xs font-mono tracking-widest text-muted-foreground">
-          {["capabilities", "stack", "projects", "experience"].map((item) => (
-            <a key={item} href={`#${item}`} className="hover:text-primary transition-colors relative group py-2">
-              //{item.toUpperCase()}
-              <span className="absolute bottom-0 left-0 w-full h-[1px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-            </a>
-          ))}
-          <Link href="/about" className="hover:text-primary transition-colors relative group py-2">
-            //ABOUT
-            <span className="absolute bottom-0 left-0 w-full h-[1px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-          </Link>
-          <a href="#insights" className="hover:text-primary transition-colors relative group py-2">
-            //INSIGHTS
-            <span className="absolute bottom-0 left-0 w-full h-[1px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-          </a>
-        </div>
-        <button
-          type="button"
-          onClick={() => setMobileNavOpen((prev) => !prev)}
-          className="flex h-10 w-10 items-center justify-center border border-white/10 text-primary transition-colors hover:border-primary/40 hover:bg-primary/10 lg:hidden"
-          aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileNavOpen}
-        >
-          {mobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-        </button>
-        <a
-          href="mailto:rishavraj5999@gmail.com"
-          className="group relative hidden overflow-hidden rounded-none border border-primary/30 px-4 py-2 text-[10px] font-mono font-bold tracking-[0.18em] text-primary transition-all hover:bg-primary/10 sm:px-6 sm:py-2.5 sm:text-xs lg:inline-block"
-        >
-          <span className="relative z-10 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            INITIATE
-          </span>
-          <div className="absolute inset-0 bg-primary/20 translate-y-full transition-transform duration-300 ease-out group-hover:translate-y-0 group-active:translate-y-0" />
-        </a>
-        </div>
-
-        {mobileNavOpen && (
-          <div className="mt-4 border border-white/10 bg-background/95 p-3 shadow-2xl backdrop-blur-xl lg:hidden">
-            <div className="grid grid-cols-1 gap-2 text-[11px] font-mono uppercase tracking-[0.16em] text-muted-foreground">
-              {["capabilities", "stack", "projects", "experience", "insights"].map((item) => (
-                <a
-                  key={item}
-                  href={`#${item}`}
-                  onClick={() => setMobileNavOpen(false)}
-                  className="border border-white/10 px-3 py-2.5 transition-colors hover:border-primary/40 hover:text-primary active:border-primary/40 active:text-primary"
-                >
-                  //{item}
-                </a>
-              ))}
-              <Link
-                href="/about"
-                onClick={() => setMobileNavOpen(false)}
-                className="border border-white/10 px-3 py-2.5 transition-colors hover:border-primary/40 hover:text-primary active:border-primary/40 active:text-primary"
-              >
-                //about
-              </Link>
-              <a
-                href="mailto:rishavraj5999@gmail.com"
-                onClick={() => setMobileNavOpen(false)}
-                className="mt-1 inline-flex items-center justify-center border border-primary/35 bg-primary px-3 py-3 text-center text-[11px] font-bold tracking-[0.2em] text-black transition-all hover:bg-white active:bg-white"
-              >
-                INITIATE
-              </a>
-            </div>
-          </div>
-        )}
-      </nav>
+      <SiteNav />
 
       <main className="relative z-10">
 
         {/* ===================== HERO ===================== */}
-        <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden pt-24 sm:pt-20">
+        <section className="relative flex min-h-[88vh] flex-col items-center justify-center overflow-hidden pt-28 pb-12 sm:min-h-[84vh] sm:pt-24 sm:pb-14">
 
           {/* BG hero image — behind everything */}
           <div className="absolute inset-0 z-0">
-            <img src={heroImg} alt="" className="w-full h-full object-cover opacity-[0.12] mix-blend-luminosity" />
+            <img src={heroImg} alt="" className="w-full h-full object-cover opacity-[0.28] mix-blend-screen" />
             <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background" />
             <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-background/80" />
           </div>
@@ -350,7 +275,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="mb-8 inline-flex flex-wrap items-center justify-center gap-2 border border-primary/25 bg-primary/5 px-3 py-2 text-[10px] font-mono uppercase tracking-[0.14em] text-primary backdrop-blur-md sm:mb-10 sm:gap-3 sm:px-5 sm:text-xs sm:tracking-[0.2em]"
+              className="mb-6 inline-flex flex-wrap items-center justify-center gap-2 border border-primary/25 bg-primary/5 px-3 py-2 text-[10px] font-mono uppercase tracking-[0.14em] text-primary backdrop-blur-md sm:mb-8 sm:gap-3 sm:px-5 sm:text-xs sm:tracking-[0.2em]"
             >
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
@@ -367,7 +292,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
             >
-              <h1 className="mb-6 text-[clamp(2.8rem,16vw,9rem)] font-display font-bold leading-[0.9] tracking-[-0.04em] sm:leading-[0.88]">
+              <h1 className="mb-5 text-[clamp(2.8rem,14vw,8rem)] font-display font-bold leading-[0.9] tracking-[-0.04em] sm:leading-[0.88]">
                 <span className="block text-white/90">RISHAV</span>
                 <span className="block relative">
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-[#a78bfa] to-secondary">RAJ</span>
@@ -382,7 +307,7 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
-              className="mb-6 flex items-center justify-center gap-2 sm:gap-3"
+              className="mb-5 flex items-center justify-center gap-2 sm:gap-3"
             >
               <span className="hidden h-[1px] w-8 bg-primary/60 sm:block" />
               <span className="min-h-[1.75rem] text-base font-mono tracking-[0.15em] text-primary sm:min-h-[2rem] sm:text-lg sm:tracking-widest md:text-2xl">
@@ -395,7 +320,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1, duration: 0.7 }}
-              className="mx-auto mb-10 max-w-2xl text-base font-light leading-relaxed text-muted-foreground sm:mb-12 md:text-xl"
+              className="mx-auto mb-8 max-w-2xl text-base font-light leading-relaxed text-muted-foreground sm:mb-10 md:text-[1.15rem]"
             >
               Architecting digital experiences at the intersection of precision engineering and visionary design.
               I turn complex ideas into beautiful, performant interfaces.
@@ -406,7 +331,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.1, duration: 0.7 }}
-              className="mb-14 flex flex-wrap items-center justify-center gap-3 sm:mb-20 sm:gap-5"
+              className="mb-10 flex flex-wrap items-center justify-center gap-3 sm:mb-14 sm:gap-4"
             >
               <a
                 href="#projects"
@@ -424,11 +349,13 @@ export default function Home() {
               <div className="flex items-center gap-2 sm:gap-3">
                 {[
                   { icon: SiGithub, label: "GitHub", href: "#" },
-                  { icon: RiLinkedinFill, label: "LinkedIn", href: "#" },
+                  { icon: RiLinkedinFill, label: "LinkedIn", href: "https://www.linkedin.com/in/rishav-raj-1602-/" },
                 ].map((s) => (
                   <a
                     key={s.label}
                     href={s.href}
+                    target={s.href.startsWith("http") ? "_blank" : undefined}
+                    rel={s.href.startsWith("http") ? "noreferrer" : undefined}
                     data-testid={`link-${s.label.toLowerCase()}`}
                     className="flex h-12 w-12 items-center justify-center border border-white/10 text-muted-foreground backdrop-blur-sm transition-all hover:scale-110 hover:border-primary/50 hover:text-primary active:scale-110 active:border-primary/50 active:text-primary sm:h-14 sm:w-14"
                   >
@@ -443,7 +370,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.3, duration: 0.7 }}
-              className="mx-auto grid max-w-xl grid-cols-1 divide-y divide-white/8 border border-white/8 bg-white/[0.02] backdrop-blur-md sm:grid-cols-3 sm:divide-x sm:divide-y-0"
+              className="mx-auto grid max-w-[44rem] grid-cols-1 divide-y divide-white/8 border border-white/8 bg-white/[0.02] backdrop-blur-md sm:grid-cols-3 sm:divide-x sm:divide-y-0"
             >
               {[
                 { label: "Years Experience", value: 2, suffix: "+" },
@@ -794,7 +721,7 @@ export default function Home() {
                 className="group relative overflow-hidden border border-white/8 bg-white/[0.015] transition-all duration-400 hover:border-primary/30"
               >
                 <Link
-                  href={`/blog/${a.slug}`}
+                  href={`/blog/${a.slug}?from=home-insights`}
                   data-testid={`link-article-${i}`}
                   className="block p-6 sm:p-8"
                 >
@@ -886,12 +813,14 @@ export default function Home() {
             <div className="flex items-center justify-center gap-4 sm:gap-6">
               {[
                 { icon: SiGithub, label: "GitHub", href: "#" },
-                { icon: Network, label: "LinkedIn", href: "#" },
+                { icon: Network, label: "LinkedIn", href: "https://www.linkedin.com/in/rishav-raj-1602-/" },
                 { icon: Globe, label: "Website", href: "#" },
               ].map((s) => (
                 <a
                   key={s.label}
                   href={s.href}
+                  target={s.href.startsWith("http") ? "_blank" : undefined}
+                  rel={s.href.startsWith("http") ? "noreferrer" : undefined}
                   data-testid={`link-social-${s.label.toLowerCase()}`}
                   className="flex h-12 w-12 items-center justify-center border border-white/10 text-muted-foreground transition-all hover:scale-110 hover:border-primary/40 hover:text-primary active:scale-110 active:border-primary/40 active:text-primary"
                 >

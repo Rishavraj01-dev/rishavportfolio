@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Mail, Terminal, User, Layers, Rocket } from "lucide-react";
-import { Link } from "wouter";
+import { ArrowRight, Terminal, User, Layers, Rocket } from "lucide-react";
+import SiteNav from "@/components/site-nav";
 import rishavImg from "../assets/images/rishav.jpeg";
 
 const principles = [
@@ -29,26 +29,10 @@ export default function AboutPage() {
         <div className="absolute bottom-[-10%] right-[-5%] h-[420px] w-[420px] rounded-full bg-secondary/10 blur-[120px]" />
       </div>
 
-      <main className="relative z-10 px-4 py-16 sm:px-6 md:px-12 md:py-20 lg:px-20 xl:px-24">
+      <SiteNav />
+
+      <main className="relative z-10 px-4 pb-16 pt-28 sm:px-6 md:px-12 md:pb-20 md:pt-36 lg:px-20 xl:px-24">
         <div className="w-full">
-          <div className="mb-10 flex flex-wrap items-center justify-between gap-4 sm:mb-12 sm:gap-6">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 border border-white/10 px-4 py-2.5 font-mono text-[10px] tracking-[0.18em] text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary sm:gap-3 sm:px-5 sm:py-3 sm:text-xs sm:tracking-widest"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              BACK HOME
-            </Link>
-
-            <a
-              href="mailto:rishavraj5999@gmail.com"
-              className="inline-flex items-center gap-2 border border-primary/30 px-4 py-2.5 font-mono text-[10px] tracking-[0.18em] text-primary transition-colors hover:bg-primary/10 sm:gap-3 sm:px-5 sm:py-3 sm:text-xs sm:tracking-widest"
-            >
-              <Mail className="h-4 w-4" />
-              START A PROJECT
-            </a>
-          </div>
-
           <div className="mb-12 border border-white/10 bg-white/[0.03] p-5 sm:p-8 md:mb-16 md:p-12 xl:p-16">
             <div className="mb-5 flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.18em] text-primary sm:mb-6 sm:gap-3 sm:text-[11px] sm:tracking-[0.25em]">
               <Terminal className="h-4 w-4" />
@@ -56,13 +40,13 @@ export default function AboutPage() {
             </div>
             <div className="grid items-start gap-8 sm:gap-10 xl:grid-cols-[minmax(0,1fr)_420px]">
               <div>
-                <h1 className="mb-6 text-4xl font-display font-bold tracking-[-0.04em] sm:mb-8 sm:text-5xl md:text-7xl">
+                <h1 className="mb-4 text-3xl font-display font-bold tracking-[-0.04em] sm:mb-6 sm:text-4xl md:text-5xl lg:text-6xl">
                   Building digital systems
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
                     with clarity and intent.
                   </span>
                 </h1>
-                <div className="space-y-4 text-sm leading-7 text-muted-foreground sm:space-y-5 sm:text-base sm:leading-8 md:text-lg">
+                <div className="space-y-4 text-sm leading-7 text-muted-foreground sm:space-y-5 sm:text-[15px] sm:leading-7 md:text-base md:leading-8">
                   <p>
                     I work across frontend, backend, and automation with a strong bias toward performance, clean architecture, and real-world usefulness.
                   </p>

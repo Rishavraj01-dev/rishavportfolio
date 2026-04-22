@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { ArrowLeft, BookOpen, Clock } from "lucide-react";
 import { Link, useParams } from "wouter";
 import { getBlogBySlug } from "@/lib/blogs";
@@ -6,6 +7,14 @@ import NotFound from "@/pages/not-found";
 export default function BlogPostPage() {
   const params = useParams<{ slug: string }>();
   const blog = getBlogBySlug(params.slug);
+  const backHref =
+    typeof window !== "undefined" && new URLSearchParams(window.location.search).get("from") === "home-insights"
+      ? "/#insights"
+      : "/insights";
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [params.slug]);
 
   if (!blog) {
     return <NotFound />;
@@ -15,7 +24,7 @@ export default function BlogPostPage() {
     <main className="min-h-screen bg-background text-foreground">
       <section className="border-b border-white/[0.06] px-4 py-8 sm:px-6 sm:py-10 md:px-16 lg:px-24">
         <Link
-          href="/#insights"
+          href={backHref}
           className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.16em] text-primary transition-colors hover:text-white sm:gap-3 sm:text-xs sm:tracking-[0.2em]"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -37,11 +46,11 @@ export default function BlogPostPage() {
             </span>
           </div>
 
-          <h1 className="mb-6 text-3xl font-display font-bold tracking-tight sm:mb-8 sm:text-4xl md:text-6xl">
+          <h1 className="mb-5 text-2xl font-display font-bold tracking-tight sm:mb-6 sm:text-3xl md:text-4xl lg:text-5xl">
             {blog.title}
           </h1>
 
-          <div className="mb-10 space-y-4 text-base leading-7 text-muted-foreground sm:mb-14 sm:space-y-5 sm:text-lg sm:leading-8">
+          <div className="mb-8 space-y-4 text-sm leading-7 text-muted-foreground sm:mb-12 sm:space-y-5 sm:text-[15px] sm:leading-7 md:text-base md:leading-8">
             {blog.intro.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
@@ -50,21 +59,21 @@ export default function BlogPostPage() {
           <div className="space-y-10 sm:space-y-14">
             {blog.sections.map((section) => (
               <section key={section.heading} className="border-t border-white/[0.06] pt-8 sm:pt-10">
-                <h2 className="mb-4 text-xl font-display font-bold sm:mb-5 sm:text-2xl md:text-3xl">
+                <h2 className="mb-4 text-lg font-display font-bold sm:mb-5 sm:text-xl md:text-2xl">
                   {section.heading}
                 </h2>
 
                 {section.paragraphs?.map((paragraph) => (
                   <p
                     key={paragraph}
-                    className="mb-4 text-sm leading-7 text-muted-foreground sm:text-base sm:leading-8 md:text-lg"
+                    className="mb-4 text-sm leading-7 text-muted-foreground sm:text-[15px] sm:leading-7 md:text-base md:leading-8"
                   >
                     {paragraph}
                   </p>
                 ))}
 
                 {section.bullets && (
-                  <ul className="space-y-3 text-sm leading-7 text-muted-foreground sm:text-base sm:leading-8 md:text-lg">
+                  <ul className="space-y-3 text-sm leading-7 text-muted-foreground sm:text-[15px] sm:leading-7 md:text-base md:leading-8">
                     {section.bullets.map((bullet) => (
                       <li key={bullet} className="flex gap-3">
                         <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
@@ -78,10 +87,10 @@ export default function BlogPostPage() {
           </div>
 
           <section className="mt-12 border-t border-white/[0.06] pt-8 sm:mt-16 sm:pt-10">
-            <h2 className="mb-4 text-xl font-display font-bold sm:mb-5 sm:text-2xl md:text-3xl">
+            <h2 className="mb-4 text-lg font-display font-bold sm:mb-5 sm:text-xl md:text-2xl">
               {blog.conclusionTitle}
             </h2>
-            <div className="space-y-4 text-sm leading-7 text-muted-foreground sm:text-base sm:leading-8 md:text-lg">
+            <div className="space-y-4 text-sm leading-7 text-muted-foreground sm:text-[15px] sm:leading-7 md:text-base md:leading-8">
               {blog.conclusion.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
