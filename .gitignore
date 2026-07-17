@@ -3,14 +3,19 @@ node_modules/
 
 # build output
 dist/
+build/
+out/
 .vite/
 *.tsbuildinfo
 .cache/
 .eslintcache
 .sass-cache/
-out/
 tmp/
 temp/
+
+# deployment output
+.netlify/
+.vercel/
 
 # logs
 *.log
@@ -30,9 +35,17 @@ pnpm-debug.log*
 .env.development.local
 .env.test.local
 .env.production.local
+*.local
 
-# coverage
+# test and coverage output
 coverage/
+.nyc_output/
+*.lcov
+playwright-report/
+test-results/
+cypress/screenshots/
+cypress/videos/
+storybook-static/
 
 # OS / editor files
 .DS_Store
@@ -41,3 +54,8 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+
+# package manager / tool caches
+.npm/
+.pnpm-store/
+.turbo/

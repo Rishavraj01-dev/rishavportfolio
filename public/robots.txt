@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /admin/
+Disallow: /admin/login
+Disallow: /api/
+Disallow: /private/
+Disallow: /auth/
+Disallow: /login
+
+Sitemap: https://rishavrajcoder.in/sitemap.xml

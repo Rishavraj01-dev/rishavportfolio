@@ -1,5 +1,5 @@
 import { Bot, MessageSquare, Send, Sparkles, User, X } from "lucide-react";
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, type TouchEvent, type WheelEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import { blogs } from "@/lib/blogs";
 
@@ -224,7 +224,11 @@ function getAssistantReply(input: string) {
 export default function AiAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
+  const panelRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
+  const lastTouchYRef = useRef<number | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
@@ -235,6 +239,11 @@ export default function AiAssistant() {
 
   const assistantHints = useMemo(() => quickPrompts.slice(0, 4), []);
 
+  const closeAssistant = () => {
+    setIsOpen(false);
+    window.requestAnimationFrame(() => toggleButtonRef.current?.focus({ preventScroll: true }));
+  };
+
   useEffect(() => {
     if (!isOpen) return;
     const container = messagesContainerRef.current;
@@ -244,6 +253,85 @@ export default function AiAssistant() {
       container.scrollTop = container.scrollHeight;
     });
   }, [messages, isOpen]);
+
+useEffect(() => {
+  if (!isOpen) return;
+
+  window.requestAnimationFrame(() => inputRef.current?.focus({ preventScroll: true }));
+
+  const onKeyDown = (event: globalThis.KeyboardEvent) => {
+    if (event.key === "Escape") {
+      closeAssistant();
+      return;
+    }
+
+    if (event.key !== "Tab") return;
+
+    const focusable = Array.from(
+      panelRef.current?.querySelectorAll<HTMLElement>(
+        "a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex='-1'])"
+      ) ?? []
+    );
+
+    if (!focusable.length) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
+  document.addEventListener("keydown", onKeyDown);
+  return () => document.removeEventListener("keydown", onKeyDown);
+}, [isOpen]);
+
+const keepScrollInsidePanel = (target: EventTarget | null, deltaY: number) => {
+  const scroller = messagesContainerRef.current;
+  if (!scroller || !(target instanceof Node)) return true;
+
+  const targetIsMessageArea = scroller.contains(target);
+  const canScroll = scroller.scrollHeight > scroller.clientHeight;
+  const atTop = scroller.scrollTop <= 0;
+  const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
+
+  if (!targetIsMessageArea && canScroll) {
+    scroller.scrollTop += deltaY;
+  }
+
+  return !targetIsMessageArea || !canScroll || (deltaY < 0 && atTop) || (deltaY > 0 && atBottom);
+};
+
+const handlePanelWheel = (event: WheelEvent<HTMLDivElement>) => {
+  if (keepScrollInsidePanel(event.target, event.deltaY)) {
+    event.preventDefault();
+  }
+
+  event.stopPropagation();
+};
+
+const handlePanelTouchStart = (event: TouchEvent<HTMLDivElement>) => {
+  lastTouchYRef.current = event.touches[0]?.clientY ?? null;
+};
+
+const handlePanelTouchMove = (event: TouchEvent<HTMLDivElement>) => {
+  const touchY = event.touches[0]?.clientY;
+  const lastTouchY = lastTouchYRef.current;
+  if (touchY == null || lastTouchY == null) return;
+
+  const deltaY = lastTouchY - touchY;
+  if (keepScrollInsidePanel(event.target, deltaY)) {
+    event.preventDefault();
+  }
+
+  event.stopPropagation();
+  lastTouchYRef.current = touchY;
+};
 
   const submitMessage = (message: string) => {
     const trimmed = message.trim();
@@ -265,14 +353,24 @@ export default function AiAssistant() {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-x-3 bottom-20 top-18 z-[80] flex max-h-[calc(100dvh-6.5rem)] flex-col border border-white/10 bg-background/95 shadow-2xl backdrop-blur-xl sm:inset-x-4 sm:bottom-24 sm:top-20 md:inset-x-auto md:bottom-28 md:right-8 md:top-auto md:max-h-[min(42rem,calc(100vh-9rem))] md:w-[24rem]">
+        <div
+          id="portfolio-assistant-panel"
+          ref={panelRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="portfolio-assistant-title"
+          onWheel={handlePanelWheel}
+          onTouchStart={handlePanelTouchStart}
+          onTouchMove={handlePanelTouchMove}
+          className="fixed inset-x-3 bottom-20 top-18 z-[80] flex max-h-[calc(100dvh-6.5rem)] flex-col overscroll-contain border border-white/10 bg-background/95 shadow-2xl backdrop-blur-xl sm:inset-x-4 sm:bottom-24 sm:top-20 md:inset-x-auto md:bottom-28 md:right-8 md:top-auto md:max-h-[min(42rem,calc(100vh-9rem))] md:w-[24rem]"
+        >
           <div className="flex items-center justify-between border-b border-white/10 px-3 py-3 sm:px-4 sm:py-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-primary">
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-foreground">AI Assistant</p>
+                <p id="portfolio-assistant-title" className="text-sm font-semibold text-foreground">AI Assistant</p>
                 <p className="text-[10px] font-mono uppercase tracking-[0.14em] text-muted-foreground sm:text-[11px] sm:tracking-[0.18em]">
                   Portfolio Guide
                 </p>
@@ -280,8 +378,8 @@ export default function AiAssistant() {
             </div>
             <button
               type="button"
-              onClick={() => setIsOpen(false)}
-              className="text-muted-foreground transition-colors hover:text-white"
+              onClick={closeAssistant}
+              className="text-muted-foreground transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               aria-label="Close assistant"
             >
               <X className="h-4 w-4" />
@@ -290,7 +388,10 @@ export default function AiAssistant() {
 
           <div
             ref={messagesContainerRef}
-            className="flex-1 space-y-4 overflow-y-auto px-3 py-3 sm:px-4 sm:py-4"
+            className="flex-1 space-y-4 overflow-y-auto overscroll-contain px-3 py-3 sm:px-4 sm:py-4"
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions"
           >
             {messages.map((message, index) => (
               <div
@@ -335,7 +436,11 @@ export default function AiAssistant() {
             </div>
 
             <form onSubmit={handleSubmit} className="flex items-center gap-2">
+              <label htmlFor="portfolio-assistant-input" className="sr-only">Ask the portfolio assistant</label>
               <input
+                ref={inputRef}
+                id="portfolio-assistant-input"
+                name="portfolio-assistant-question"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 placeholder="Ask about projects, blogs, or contact"
@@ -367,9 +472,12 @@ export default function AiAssistant() {
 
       <button
         type="button"
+        ref={toggleButtonRef}
         onClick={() => setIsOpen((current) => !current)}
-        className="fixed bottom-4 right-3 z-[80] flex items-center gap-2 border border-primary/30 bg-background/85 px-3 py-2.5 text-[11px] font-mono uppercase tracking-[0.12em] text-primary shadow-lg backdrop-blur-xl transition-colors hover:border-primary hover:bg-primary/10 hover:text-white sm:bottom-6 sm:right-4 sm:gap-3 sm:px-4 sm:py-3 sm:text-sm sm:tracking-[0.18em] md:bottom-8 md:right-8"
-        aria-label="Open AI assistant"
+        className="fixed bottom-4 right-3 z-[80] flex items-center gap-2 border border-primary/30 bg-background/85 px-3 py-2.5 text-[11px] font-mono uppercase tracking-[0.12em] text-primary shadow-lg backdrop-blur-xl transition-colors hover:border-primary hover:bg-primary/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:bottom-6 sm:right-4 sm:gap-3 sm:px-4 sm:py-3 sm:text-sm sm:tracking-[0.18em] md:bottom-8 md:right-8"
+        aria-label={isOpen ? "Close AI assistant" : "Open AI assistant"}
+        aria-expanded={isOpen}
+        aria-controls="portfolio-assistant-panel"
       >
         <MessageSquare className="h-4 w-4" />
         AI Assistant

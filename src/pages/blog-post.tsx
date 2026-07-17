@@ -21,7 +21,7 @@ export default function BlogPostPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main id="main-content" className="min-h-screen bg-background text-foreground">
       <section className="border-b border-white/[0.06] px-4 py-8 sm:px-6 sm:py-10 md:px-16 lg:px-24">
         <Link
           href={backHref}

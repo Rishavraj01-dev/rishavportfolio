@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 
 const desktopItems = [
   { label: "HOME", href: "/" },
-  { label: "CAPABILITIES", href: "/capabilities" },
-  { label: "STACK", href: "/stack" },
+  { label: "SERVICES", href: "/capabilities" },
+  { label: "SKILLS", href: "/stack" },
   { label: "PROJECTS", href: "/projects" },
   { label: "EXPERIENCE", href: "/experience" },
   { label: "ABOUT", href: "/about" },
@@ -60,7 +60,8 @@ export default function SiteNav() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 border-b border-white/5 bg-background/50 px-4 py-4 backdrop-blur-xl md:px-12 md:py-6">
+    <header className="fixed top-0 left-0 right-0 z-40 border-b border-white/5 bg-background/50 px-4 py-4 backdrop-blur-xl md:px-12 md:py-6">
+      <nav aria-label="Primary portfolio navigation">
       <div className="flex items-center justify-between">
         <Link href="/" className="relative flex items-center gap-2 font-display text-base font-bold tracking-tighter sm:text-xl">
           <Terminal className="h-5 w-5 text-primary" />
@@ -79,6 +80,7 @@ export default function SiteNav() {
           className="flex h-10 w-10 items-center justify-center border border-white/10 text-primary transition-colors hover:border-primary/40 hover:bg-primary/10 lg:hidden"
           aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileNavOpen}
+          aria-controls="primary-mobile-menu"
         >
           {mobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </button>
@@ -96,7 +98,7 @@ export default function SiteNav() {
       </div>
 
       {mobileNavOpen ? (
-        <div className="mt-4 border border-white/10 bg-background/95 p-3 shadow-2xl backdrop-blur-xl lg:hidden">
+        <div id="primary-mobile-menu" className="mt-4 border border-white/10 bg-background/95 p-3 shadow-2xl backdrop-blur-xl lg:hidden">
           <div className="grid grid-cols-1 gap-2 text-[11px] font-mono uppercase tracking-[0.16em] text-muted-foreground">
             {mobileItems.map((item) => (
               <NavItem
@@ -118,6 +120,7 @@ export default function SiteNav() {
           </div>
         </div>
       ) : null}
-    </nav>
+      </nav>
+    </header>
   );
 }

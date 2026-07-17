@@ -30,7 +30,7 @@ export default function SectionLayout({
 
       <SiteNav />
 
-      <main className="relative z-10 px-4 pb-16 pt-28 sm:px-6 md:px-12 md:pb-20 md:pt-36 lg:px-20 xl:px-24">
+      <main id="main-content" className="relative z-10 px-4 pb-16 pt-28 sm:px-6 md:px-12 md:pb-20 md:pt-36 lg:px-20 xl:px-24">
         <section className="mb-12 border border-white/10 bg-white/[0.03] p-6 sm:mb-14 sm:p-8 md:mb-16 md:p-12 xl:p-16">
           <div className="mb-5 text-[10px] font-mono uppercase tracking-[0.18em] text-primary sm:mb-6 sm:text-[11px] sm:tracking-[0.25em]">
             {eyebrow}
@@ -44,7 +44,7 @@ export default function SectionLayout({
                 {description}
               </p>
             </div>
-            <div className="flex items-end justify-start lg:justify-end">
+            <aside className="flex items-end justify-start lg:justify-end" aria-label={`${eyebrow} page summary`}>
               <div className="w-full border border-white/10 bg-background/40 p-5 sm:p-6">
                 <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-primary">
                   {sideLabel ?? "Page Focus"}
@@ -64,7 +64,7 @@ export default function SectionLayout({
                   ))}
                 </div>
               </div>
-            </div>
+            </aside>
           </div>
         </section>
 
@@ -73,7 +73,7 @@ export default function SectionLayout({
         <section className="mt-12 border border-white/10 bg-gradient-to-r from-white/[0.03] to-transparent p-6 sm:mt-16 sm:p-8 md:p-10 xl:p-12">
           <p className="mb-4 text-[10px] font-mono uppercase tracking-[0.18em] text-primary sm:text-[11px] sm:tracking-[0.25em]">Next Move</p>
           <p className="mb-7 max-w-2xl text-base leading-7 text-muted-foreground sm:mb-8 sm:text-lg sm:leading-8">
-            If you want this area turned into a deeper case study, polished product page, or client-ready showcase, we can build it next.
+            If you are planning a portfolio, full-stack product, dashboard, internal tool, automation workflow, or AI-assisted feature, share the goal, users, timeline, and current stage of the project.
           </p>
           <a
             href="mailto:rishavraj5999@gmail.com"
