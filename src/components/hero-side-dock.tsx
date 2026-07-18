@@ -6,6 +6,7 @@ import { SiGithub } from "react-icons/si";
 import { blogs } from "@/lib/blogs";
 import ProjectPicture from "@/components/project-picture";
 import { capabilities, experience, projects, techStack } from "@/lib/portfolio-content";
+import { activatePortfolioOverlay, usePortfolioOverlayLayer } from "@/lib/overlay-layer";
 
 type DockAppId = "about" | "capabilities" | "stack" | "projects" | "experience" | "insights" | "contact";
 
@@ -408,7 +409,7 @@ const focusableSelector = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
-function AppWindow({ active, onClose }: { active: DockAppId; onClose: () => void }) {
+function AppWindow({ active, onClose, zIndex }: { active: DockAppId; onClose: () => void; zIndex: number }) {
   const windowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -448,7 +449,9 @@ function AppWindow({ active, onClose }: { active: DockAppId; onClose: () => void
       id="portfolio-dock-window"
       ref={windowRef}
       tabIndex={-1}
-      className="fixed bottom-4 left-[86px] right-3 top-[104px] z-[220] sm:left-[96px] sm:right-5 lg:left-[108px] lg:right-8"
+      className="fixed bottom-4 left-[86px] right-3 top-[104px] sm:left-[96px] sm:right-5 lg:left-[108px] lg:right-8"
+      style={{ zIndex }}
+      onPointerDown={() => activatePortfolioOverlay("dock-window")}
       role="dialog"
       aria-modal="true"
       aria-labelledby="portfolio-dock-window-title"
@@ -469,9 +472,11 @@ function AppWindow({ active, onClose }: { active: DockAppId; onClose: () => void
 export default function HeroSideDock() {
   const [active, setActive] = useState<DockAppId | null>(null);
   const openerRef = useRef<HTMLElement | null>(null);
+  const dockWindowLayer = usePortfolioOverlayLayer("dock-window", 220, 330);
 
   const openApp = (id: DockAppId, trigger: HTMLButtonElement) => {
     openerRef.current = trigger;
+    activatePortfolioOverlay("dock-window");
     setActive(id);
   };
 
@@ -491,7 +496,7 @@ export default function HeroSideDock() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 top-[88px] z-[230] flex w-[74px] flex-col overflow-visible border-r border-white/10 bg-black/72 px-2 py-3 shadow-[14px_0_38px_rgba(0,0,0,0.42)] backdrop-blur-2xl lg:w-[82px] lg:px-2.5" aria-label="Portfolio quick links dock">
+      <nav className="fixed bottom-0 left-0 top-[73px] z-[230] md:top-[88px] flex w-[74px] flex-col overflow-visible border-r border-white/10 bg-black/72 px-2 py-3 shadow-[14px_0_38px_rgba(0,0,0,0.42)] backdrop-blur-2xl lg:w-[82px] lg:px-2.5" aria-label="Portfolio quick links dock">
         <div className="mb-4 flex h-4 items-center gap-1 px-1" aria-hidden="true">
           <span className="h-1.5 w-8 rounded-full bg-white/85 shadow-[0_0_10px_rgba(255,255,255,0.22)]" />
           <span className="h-1.5 w-1.5 rounded-full bg-white/50" />
@@ -508,7 +513,7 @@ export default function HeroSideDock() {
         </div>
       </nav>
 
-      {active ? <AppWindow active={active} onClose={closeApp} /> : null}
+      {active ? <AppWindow active={active} onClose={closeApp} zIndex={dockWindowLayer} /> : null}
     </>
   );
 }

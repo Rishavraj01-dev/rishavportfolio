@@ -2,6 +2,7 @@ import { Bot, MessageSquare, Send, Sparkles, User, X } from "lucide-react";
 import { type FormEvent, type TouchEvent, type WheelEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import { blogs } from "@/lib/blogs";
+import { activatePortfolioOverlay, usePortfolioOverlayLayer } from "@/lib/overlay-layer";
 
 type ChatMessage = {
   role: "assistant" | "user";
@@ -229,6 +230,7 @@ export default function AiAssistant() {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
   const lastTouchYRef = useRef<number | null>(null);
+  const assistantLayer = usePortfolioOverlayLayer("ai-assistant", 80, 340);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
@@ -239,12 +241,20 @@ export default function AiAssistant() {
 
   const assistantHints = useMemo(() => quickPrompts.slice(0, 4), []);
 
-  const closeAssistant = () => {
-    setIsOpen(false);
-    window.requestAnimationFrame(() => toggleButtonRef.current?.focus({ preventScroll: true }));
-  };
+const closeAssistant = () => {
+  setIsOpen(false);
+  window.requestAnimationFrame(() => toggleButtonRef.current?.focus({ preventScroll: true }));
+};
 
-  useEffect(() => {
+const toggleAssistant = () => {
+  setIsOpen((current) => {
+    const next = !current;
+    if (next) activatePortfolioOverlay("ai-assistant");
+    return next;
+  });
+};
+
+useEffect(() => {
     if (!isOpen) return;
     const container = messagesContainerRef.current;
     if (!container) return;
@@ -362,7 +372,9 @@ const handlePanelTouchMove = (event: TouchEvent<HTMLDivElement>) => {
           onWheel={handlePanelWheel}
           onTouchStart={handlePanelTouchStart}
           onTouchMove={handlePanelTouchMove}
-          className="fixed inset-x-3 bottom-20 top-18 z-[80] flex max-h-[calc(100dvh-6.5rem)] flex-col overscroll-contain border border-white/10 bg-background/95 shadow-2xl backdrop-blur-xl sm:inset-x-4 sm:bottom-24 sm:top-20 md:inset-x-auto md:bottom-28 md:right-8 md:top-auto md:max-h-[min(42rem,calc(100vh-9rem))] md:w-[24rem]"
+          onPointerDown={() => activatePortfolioOverlay("ai-assistant")}
+          style={{ zIndex: assistantLayer }}
+          className="fixed bottom-20 left-[86px] right-3 top-18 flex max-h-[calc(100dvh-6.5rem)] flex-col overscroll-contain border border-white/10 bg-background/95 shadow-2xl backdrop-blur-xl sm:bottom-24 sm:left-[96px] sm:right-4 sm:top-20 md:inset-x-auto md:bottom-28 md:left-auto md:right-8 md:top-auto md:max-h-[min(42rem,calc(100vh-9rem))] md:w-[24rem]"
         >
           <div className="flex items-center justify-between border-b border-white/10 px-3 py-3 sm:px-4 sm:py-4">
             <div className="flex items-center gap-3">
@@ -473,8 +485,9 @@ const handlePanelTouchMove = (event: TouchEvent<HTMLDivElement>) => {
       <button
         type="button"
         ref={toggleButtonRef}
-        onClick={() => setIsOpen((current) => !current)}
-        className="fixed bottom-4 right-3 z-[80] flex items-center gap-2 border border-primary/30 bg-background/85 px-3 py-2.5 text-[11px] font-mono uppercase tracking-[0.12em] text-primary shadow-lg backdrop-blur-xl transition-colors hover:border-primary hover:bg-primary/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:bottom-6 sm:right-4 sm:gap-3 sm:px-4 sm:py-3 sm:text-sm sm:tracking-[0.18em] md:bottom-8 md:right-8"
+        onClick={toggleAssistant}
+        style={{ zIndex: isOpen ? assistantLayer : 240 }}
+        className="fixed bottom-4 right-3 flex items-center gap-2 border border-primary/30 bg-background/85 px-3 py-2.5 text-[11px] font-mono uppercase tracking-[0.12em] text-primary shadow-lg backdrop-blur-xl transition-colors hover:border-primary hover:bg-primary/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:bottom-6 sm:right-4 sm:gap-3 sm:px-4 sm:py-3 sm:text-sm sm:tracking-[0.18em] md:bottom-8 md:right-8"
         aria-label={isOpen ? "Close AI assistant" : "Open AI assistant"}
         aria-expanded={isOpen}
         aria-controls="portfolio-assistant-panel"

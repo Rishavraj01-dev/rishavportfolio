@@ -1,6 +1,7 @@
 import { Menu, Terminal, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import { activatePortfolioOverlay, usePortfolioOverlayLayer } from "@/lib/overlay-layer";
 import { cn } from "@/lib/utils";
 
 const desktopItems = [
@@ -57,10 +58,19 @@ function NavItem({
 
 export default function SiteNav() {
   const [location] = useLocation();
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+const [mobileNavOpen, setMobileNavOpen] = useState(false);
+const mobileNavLayer = usePortfolioOverlayLayer("mobile-nav", 40, 320);
 
-  return (
-    <header className="fixed top-0 left-0 right-0 z-40 border-b border-white/5 bg-background/50 px-4 py-4 backdrop-blur-xl md:px-12 md:py-6">
+const toggleMobileNav = () => {
+  setMobileNavOpen((prev) => {
+    const next = !prev;
+    if (next) activatePortfolioOverlay("mobile-nav");
+    return next;
+  });
+};
+
+return (
+    <header className="fixed top-0 left-0 right-0 z-40 border-b border-white/5 bg-background/90 px-4 py-4 md:px-12 md:py-6" style={{ zIndex: mobileNavOpen ? mobileNavLayer : 40 }}>
       <nav aria-label="Primary portfolio navigation">
       <div className="flex items-center justify-between">
         <Link href="/" className="relative flex items-center gap-2 font-display text-base font-bold tracking-tighter sm:text-xl">
@@ -76,7 +86,7 @@ export default function SiteNav() {
 
         <button
           type="button"
-          onClick={() => setMobileNavOpen((prev) => !prev)}
+          onClick={toggleMobileNav}
           className="flex h-10 w-10 items-center justify-center border border-white/10 text-primary transition-colors hover:border-primary/40 hover:bg-primary/10 lg:hidden"
           aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileNavOpen}
@@ -98,7 +108,7 @@ export default function SiteNav() {
       </div>
 
       {mobileNavOpen ? (
-        <div id="primary-mobile-menu" className="mt-4 border border-white/10 bg-background/95 p-3 shadow-2xl backdrop-blur-xl lg:hidden">
+        <div id="primary-mobile-menu" onPointerDown={() => activatePortfolioOverlay("mobile-nav")} className="fixed left-[74px] right-4 top-[73px] max-h-[calc(100dvh-5rem)] overflow-y-auto border border-white/10 bg-background/95 p-3 shadow-2xl sm:left-[82px] md:right-12 md:top-[88px] lg:hidden">
           <div className="grid grid-cols-1 gap-2 text-[11px] font-mono uppercase tracking-[0.16em] text-muted-foreground">
             {mobileItems.map((item) => (
               <NavItem
